@@ -23,7 +23,7 @@ This essential step ensures the host systems can communicate with and mount Long
 
 To confirm the successful installation and status of the iSCSI service:
 
-!(images/iscsi-service.png)
+![Diagrama mostrando volúmenes de Longhorn replicándose a través de nodos de Kubernetes usando iSCSI](images/iscsi-service.png)
 
 ---
 
