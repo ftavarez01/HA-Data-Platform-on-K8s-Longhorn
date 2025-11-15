@@ -33,7 +33,7 @@ To confirm the successful installation and status of the iSCSI service:
 
 The diagram below illustrates the high-level integration of Longhorn, demonstrating how it leverages the iSCSI client on each worker node for persistent volume access and cross-node data replication.
 
-![Diagram showing Longhorn volumes replicating across Kubernetes worker nodes using iSCSI](images/longhorn-architecture-diagram.png)
+![Diagram showing Longhorn volumes replicating across Kubernetes worker nodes using iSCSI](images/longhorn-diagram.png)
 
 ### Current Implementation and Resource Allocation
 
