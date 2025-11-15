@@ -3,7 +3,7 @@
 Highly Available (HA) Data Platform on Kubernetes. Implementation of a Software-Defined Storage (Longhorn)  solution to ensure persistence and high availability for stateful applications (e.g., PostgreSQL) within a local K8s cluster.
 
 
-# 💾 Kubernetes Persistent Storage with Longhorn (iSCSI Setup)
+## 💾 Kubernetes Persistent Storage with Longhorn (iSCSI Setup)
 
 This document details the prerequisite steps for configuring host nodes to support Longhorn, a distributed block storage system for Kubernetes.
 
@@ -13,11 +13,15 @@ This document details the prerequisite steps for configuring host nodes to suppo
 
 This essential step ensures the host systems can communicate with and mount Longhorn volumes, enabling network-based volume replication and high availability.
 
-| Command | Execution Scope | Description |
+## 🛠️ Prerequisite: Open-iSCSI Client Installation
+
+This essential step ensures the host systems can communicate with and mount Longhorn volumes, enabling network-based volume replication and high availability.
+
+| Command | Scope | Description |
 | :--- | :--- | :--- |
-| `sudo apt update` | **Per Worker Node** | Refreshes the local package index to ensure the installation of the latest stable version. |
-| `sudo apt install open-iscsi -y` | **Per Worker Node** | Installs the iSCSI client package. This client allows the host OS to treat Longhorn's replicated network volumes as native block devices. |
-| `sudo systemctl status iscsid` | **Per Worker Node** | Confirms that the iSCSI daemon (`iscsid`) is initialized and operating correctly (`active (running)`). |
+| `sudo apt update` | **Per Worker Node** | Refreshes the package index to ensure current versions. |
+| `sudo apt install open-iscsi -y` | **Per Worker Node** | Installs the iSCSI client for mounting Longhorn volumes as local disks. |
+| `sudo systemctl status iscsid` | **Per Worker Node** | Confirms the iSCSI daemon is running (`active (running)`). |
 
 ### Installation Verification
 
@@ -33,7 +37,9 @@ To confirm the successful installation and status of the iSCSI service:
 
 The diagram below illustrates the high-level integration of Longhorn, demonstrating how it leverages the iSCSI client on each worker node for persistent volume access and cross-node data replication.
 
-![Diagram showing Longhorn volumes replicating across Kubernetes worker nodes using iSCSI](images/longhorn-diagram.png)
+<p align="justify">
+  <img src="images/longhorn-diagram.png" width="95%" alt="Diagrama de Arquitectura de Longhorn con replicación iSCSI">
+</p>
 
 ### Current Implementation and Resource Allocation
 
