@@ -23,7 +23,7 @@ This essential step ensures the host systems can communicate with and mount Long
 
 To confirm the successful installation and status of the iSCSI service:
 
-!(images/iscsi-services.png)
+!(images/iscsi-service.png)
 
 ---
 
