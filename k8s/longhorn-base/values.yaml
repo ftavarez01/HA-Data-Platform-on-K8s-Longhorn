@@ -1,0 +1,3 @@
+defaultSettings:
+  backupTarget: ""
+  replicaSoftAntiAffinity: false
