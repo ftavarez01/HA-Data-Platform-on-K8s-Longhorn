@@ -3,6 +3,38 @@
 ## ⚙️ High-Availability Data Platform on Kubernetes with Longhorn
 Highly Available (HA) Data Platform on Kubernetes. Implementation of a Software-Defined Storage (Longhorn)  solution to ensure persistence and high availability for stateful applications (e.g., PostgreSQL) within a local K8s cluster.
 
+---
+## 📂 Directory Structure (GitOps Ready)
+***
+This well-organized structure clearly separates application code, infrastructure configuration, and orchestration layers, adhering to **modern GitOps principles**.
+
+```text
+/
+├── app-data-layer/
+│   └── postgres/
+│       ├── postgres-secret.yaml      # Secure credentials for the application
+│       └── postgres-statefulset.yaml # Base PostgreSQL Manifest
+│
+├── docs/                             # 🏗️ Architecture, Operations, and Technical Documentation
+│   ├── ARCHITECTURE.md               # Detailed System Design and Rationale
+│   └── OPERATIONS.md                 # Guide for Day 2 Operations and Troubleshooting
+│
+├── images/                           # Project visuals, diagrams, and logos
+│   ├── iscsi-service.png
+│   ├── kubernetes-icon.png
+│   ├── kubernetes-title.png
+│   ├── longhorn-diagram.png
+│   └── title-profesional-k8s.jpg
+│
+├── k8s/
+│   └── longhorn-base/ 
+│       └── values.yaml               # Longhorn Helm Configuration file
+│
+├── kustomize/
+│   └── kustomization.yaml            # 🚀 SINGLE ENTRY POINT (Orchestrates all components)
+│
+└── README.md                         # High-level project overview
+```
 
 ## 💾 Kubernetes Persistent Storage with Longhorn (iSCSI Setup)
 
