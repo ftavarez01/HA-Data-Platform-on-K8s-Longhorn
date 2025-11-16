@@ -4,6 +4,7 @@ kind: Kustomization
 # Kubernetes resources to be managed by Kustomize
 resources:
   - ../../app-data-layer/postgres/postgres-statefulset.yaml
+  - ../../app-data-layer/postgres/postgres-secret.yaml
 
 # Infractucture Orquestation  (Longhorn Helm )
 helmCharts:
