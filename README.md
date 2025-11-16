@@ -1,5 +1,6 @@
 # **THIS PROJECT IS UNDER CONSTRUCTION**
-## High-Availability Data Platform on Kubernetes with Longhorn
+
+## ⚙️ High-Availability Data Platform on Kubernetes with Longhorn
 Highly Available (HA) Data Platform on Kubernetes. Implementation of a Software-Defined Storage (Longhorn)  solution to ensure persistence and high availability for stateful applications (e.g., PostgreSQL) within a local K8s cluster.
 
 
@@ -79,5 +80,60 @@ To ensure the repositories are ready:
 
 We will install Longhorn in its own dedicated namespace (`longhorn-system`) using Helm.
 
+
 ```bash
 helm install longhorn longhorn/longhorn --namespace longhorn-system --create-namespace
+
+```
+
+---
+
+## ✅ Phase 1: Longhorn Functional Verification
+---
+We must ensure that the Longhorn controller is ready to provision storage and that your nodes are registered.
+
+### A. Verify Node Installation
+Longhorn must detect your worker nodes and enable them for storage.
+
+**Your Task:**
+
+1.  Use `kubectl` to view the custom resources (CRD) for `nodes.longhorn.io`.
+2.  Verify that the status (`Ready`) of the detected nodes is **True**.
+
+**Guide Command:**
+
+```bash
+# This command is helpful for checking the Longhorn Node CRD:
+kubectl get nodes.longhorn.io -n longhorn-system
+
+```
+---
+
+### B. Verify the StorageClass
+---
+Longhorn creates a default StorageClass that we'll use for our database.
+
+**Your Task:**
+
+1.  Verify that the StorageClass named **longhorn** exists in your cluster.
+2.  Confirm that it is marked as the **default** or be aware that you will reference it explicitly.
+
+**Guide Command:**
+
+```bash
+kubectl get sc
+```
+---
+### 🖥️ C. Access the UI (Optional, but Recommended)
+---
+**Objective:** Access the Longhorn Web UI to visually confirm that all your nodes are **available** and have the expected **free space** (the 62 GB you confirmed).
+
+**▶️ Execution Command (for Local Access):**
+
+```bash
+# This command forwards the Longhorn service port to your local machine:
+kubectl port-forward svc/longhorn-frontend 8080:80 -n longhorn-system
+```
+⚠️ **IMPORTANT:** Once the command is running, **open your web browser** and navigate to the following address:
+> 
+> [**http://localhost:8080**](http://localhost:8080)
