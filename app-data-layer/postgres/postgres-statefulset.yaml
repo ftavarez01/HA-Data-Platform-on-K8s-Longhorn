@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: svc-postgres
+  name: headless-postgres
   namespace: demo-app
   labels:
     service: svc-postgres
@@ -19,7 +19,8 @@ metadata:
   name: postgres
   namespace: demo-app
 spec:
-  replicas: 1 # Or more for a clustered setup
+  serviceName: "headless-postgres"
+  replicas: 2 # Or more for a clustered setup
   selector:
     matchLabels:
       db: postgres
@@ -28,11 +29,24 @@ spec:
       labels:
         db: postgres
     spec:
+      securityContext:
+        # UID 999 ID 'postgres' USER AND GROUP
+        runAsUser: 999  
+        runAsGroup: 999
+        fsGroup: 999
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  db: postgres #
+              topologyKey: "kubernetes.io/hostname"
       containers:
       - name: postgres
         image: postgres:15 # Use a specific PostgreSQL version
         ports:
         - containerPort: 5432
+
         env:
         - name: POSTGRES_DB
           valueFrom:
@@ -51,12 +65,14 @@ spec:
               key: password
         volumeMounts:
         - name: postgres-data
-          mountPath: /var/lib/postgresql/data
+          mountPath: /var/lib/postgresql
+          
   volumeClaimTemplates:
   - metadata:
       name: postgres-data
     spec:
       accessModes: [ "ReadWriteOnce" ]
+      storageClassName: "longhorn"
       resources:
         requests:
           storage: 5Gi
