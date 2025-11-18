@@ -8,13 +8,10 @@ metadata:
 spec:
   ports:
   - port: 5432
-    name: postgres
   clusterIP: None
   selector:
     db: postgres
-
 ---
-
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -22,7 +19,7 @@ metadata:
   namespace: demo-app
 spec:
   serviceName: "headless-postgres"
-  replicas: 2 
+  replicas: 2
   selector:
     matchLabels:
       db: postgres
@@ -32,32 +29,25 @@ spec:
         db: postgres
     spec:
       securityContext:
-        runAsUser: 999 
+        runAsUser: 999
         runAsGroup: 999
-        fsGroup: 999       
+        fsGroup: 999
+
       affinity:
         podAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 100
-            podAffinityTerm:
-              labelSelector:
-                matchExpressions:
-                - key: db
-                  operator: In
-                  values:
-                  - postgres
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  db: postgres
               topologyKey: "kubernetes.io/hostname"
-      
+
       containers:
       - name: postgres
-        image: postgres:15 
+        image: postgres:15
         ports:
         - containerPort: 5432
-          name: postgres
 
         env:
-        - name: PGDATA
-          value: /var/lib/postgresql/data
         - name: POSTGRES_DB
           valueFrom:
             secretKeyRef:
@@ -76,10 +66,9 @@ spec:
 
         volumeMounts:
         - name: postgres-data
-          # CORRECCIÓN CRÍTICA: Montar el PVC directamente en la ubicación esperada por PostgreSQL ($PGDATA)
-          mountPath: /var/lib/postgresql
-          # Se elimina 'subPath' para que la raíz del volumen sea el directorio de datos
-          
+          mountPath: /var/lib/postgresql/data
+          subPath: data   # <-- NECESARIO
+
   volumeClaimTemplates:
   - metadata:
       name: postgres-data

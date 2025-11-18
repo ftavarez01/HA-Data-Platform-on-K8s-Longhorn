@@ -8,13 +8,11 @@ metadata:
 spec:
   ports:
   - port: 5432
-    name: postgres
+   # name: web
   clusterIP: None
   selector:
     db: postgres
-
 ---
-
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -22,7 +20,7 @@ metadata:
   namespace: demo-app
 spec:
   serviceName: "headless-postgres"
-  replicas: 2 
+  replicas: 2 # Or more for a clustered setup
   selector:
     matchLabels:
       db: postgres
@@ -32,32 +30,24 @@ spec:
         db: postgres
     spec:
       securityContext:
-        runAsUser: 999 
+        # UID 999 ID 'postgres' USER AND GROUP
+        runAsUser: 999  
         runAsGroup: 999
-        fsGroup: 999       
+        fsGroup: 999
       affinity:
         podAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 100
-            podAffinityTerm:
-              labelSelector:
-                matchExpressions:
-                - key: db
-                  operator: In
-                  values:
-                  - postgres
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  db: postgres #
               topologyKey: "kubernetes.io/hostname"
-      
       containers:
       - name: postgres
-        image: postgres:15 
+        image: postgres:15 # Use a specific PostgreSQL version
         ports:
         - containerPort: 5432
-          name: postgres
 
         env:
-        - name: PGDATA
-          value: /var/lib/postgresql/data
         - name: POSTGRES_DB
           valueFrom:
             secretKeyRef:
@@ -73,12 +63,10 @@ spec:
             secretKeyRef:
               name: postgres-secret
               key: password
-
         volumeMounts:
         - name: postgres-data
-          # CORRECCIÓN CRÍTICA: Montar el PVC directamente en la ubicación esperada por PostgreSQL ($PGDATA)
           mountPath: /var/lib/postgresql
-          # Se elimina 'subPath' para que la raíz del volumen sea el directorio de datos
+          subPath: data
           
   volumeClaimTemplates:
   - metadata:
@@ -89,3 +77,4 @@ spec:
       resources:
         requests:
           storage: 5Gi
+
