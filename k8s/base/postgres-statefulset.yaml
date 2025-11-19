@@ -76,9 +76,7 @@ spec:
 
         volumeMounts:
         - name: postgres-data
-          # CORRECCIÓN CRÍTICA: Montar el PVC directamente en la ubicación esperada por PostgreSQL ($PGDATA)
           mountPath: /var/lib/postgresql/data
-          # Se elimina 'subPath' para que la raíz del volumen sea el directorio de datos
           
   volumeClaimTemplates:
   - metadata:
