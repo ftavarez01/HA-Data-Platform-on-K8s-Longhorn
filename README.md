@@ -43,11 +43,6 @@ This well-organized structure clearly separates application code, infrastructure
 This document details the prerequisite steps for configuring host nodes to support Longhorn, a distributed block storage system for Kubernetes.
 
 ---
-
-### 🛠️ Prerequisite: Open-iSCSI Client Installation
-
-This essential step ensures the host systems can communicate with and mount Longhorn volumes, enabling network-based volume replication and high availability.
-
 ### 🛠️ Prerequisite: Open-iSCSI Client Installation
 
 This essential step ensures the host systems can communicate with and mount Longhorn volumes, enabling network-based volume replication and high availability.
