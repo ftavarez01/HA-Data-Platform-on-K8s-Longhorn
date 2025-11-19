@@ -1,8 +1,10 @@
 ###### **THIS PROJECT IS UNDER CONSTRUCTION YET.**
 
-# ⚙️ High-Availability Data Platform on Kubernetes with Longhorn
+## ⚙️ High-Availability Data Platform on Kubernetes with Longhorn
 ---
-![High Availability Platform](./images/initial-banner.png)
+<p align="center">
+  <img src="./images/initial-banner.png" alt="HA Data Platform Banner" width="94%" />
+</p>
 
 <p align="center"> <img src="https://img.shields.io/badge/Longhorn-High%20Availability-orange?style=for-the-badge&logo=kubernetes" /> <img src="https://img.shields.io/badge/PostgreSQL-Replicated%20Storage-blue?style=for-the-badge&logo=postgresql" /> <img src="https://img.shields.io/badge/Kubernetes-Failover%20Test-success?style=for-the-badge&logo=kubernetes" /> </p>
 Highly Available (HA) Data Platform on Kubernetes. Implementation of a Software-Defined Storage (Longhorn)  solution to ensure persistence and high availability for stateful applications (e.g., PostgreSQL) within a local K8s cluster.
@@ -59,7 +61,7 @@ This essential step ensures the host systems can communicate with and mount Long
 To confirm the successful installation and status of the iSCSI service:
 
 <p align="justify">
-<img src="images/iscsi-service.png" width="95%" alt="iagrama mostrando volúmenes de Longhorn replicándose a través de nodos de Kubernetes usando iSCSI">
+<img src="images/iscsi-service.png" width="94%" alt="iagrama mostrando volúmenes de Longhorn replicándose a través de nodos de Kubernetes usando iSCSI">
 </p>
 ---
 ### 📝 Storage Architecture and Best Practices (Longhorn)
@@ -69,7 +71,7 @@ To confirm the successful installation and status of the iSCSI service:
 The diagram below illustrates the high-level integration of Longhorn, demonstrating how it leverages the iSCSI client on each worker node for persistent volume access and cross-node data replication.
 
 <p align="justify">
-  <img src="images/longhorn-diagram.png" width="95%" alt="Diagrama de Arquitectura de Longhorn con replicación iSCSI">
+  <img src="images/longhorn-diagram.png" width="94%" alt="Diagrama de Arquitectura de Longhorn con replicación iSCSI">
 </p>
 
 #### Current Implementation and Resource Allocation
