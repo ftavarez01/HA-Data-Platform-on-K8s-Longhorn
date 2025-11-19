@@ -1,6 +1,6 @@
 ###### **THIS PROJECT IS UNDER CONSTRUCTION YET.**
 
-## ⚙️ High-Availability Data Platform on Kubernetes with Longhorn
+# ⚙️ High-Availability Data Platform on Kubernetes with Longhorn
 ---
 <p align="center">
   <img src="./images/initial-banner.png" alt="HA Data Platform Banner" width="94%" />
