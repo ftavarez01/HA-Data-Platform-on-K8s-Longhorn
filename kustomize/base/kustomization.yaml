@@ -3,8 +3,8 @@ kind: Kustomization
 
 # Kubernetes resources to be managed by Kustomize
 resources:
-  - ../../app-data-layer/postgres/postgres-statefulset.yaml
-  - ../../app-data-layer/postgres/postgres-secret.yaml
+  - ../../k8s/base/postgres-statefulset.yaml
+  - ../../k8s/base/postgres-secret.yaml
 
 # Infractucture Orquestation  (Longhorn Helm )
 helmCharts:
@@ -13,4 +13,4 @@ helmCharts:
   releaseName: longhorn
   namespace: longhorn-system
   version: v1.5.3 # Especific Version
-  valuesFile: ../../k8s/longhorn-base/values.yaml # Configuration Helm Charm
+  valuesFile: ../../longhorn/base/values.yaml # Configuration Helm Charm
