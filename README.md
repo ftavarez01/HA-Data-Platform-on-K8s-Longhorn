@@ -19,17 +19,18 @@ This well-organized structure clearly separates application code, infrastructure
 ├── k8s/
 │   ├── base/
 │   │   └── postgres/
-│   │       ├── postgres-secret.yaml       # Base K8s Manifests
+│   │       ├── postgres-secret.yaml           # Base K8s Manifests
 │   │       └── postgres-statefulset.yaml
 │   │
 │   └── longhorn/ 
-│       └── values.yaml                    # Longhorn Helm/Configuration
+│       └── base/
+            └── values.yaml                    # Longhorn Helm/Configuration
 │
 ├── kustomize/
 │   └── base/
-│       └── kustomization.yaml             # Kustomize Entry Point (Points to k8s/base)
+│       └── kustomization.yaml                 # Kustomize Entry Point (Points to k8s/base)
 │
-├── docs/                                  # 🏗️ Documentation
+├── docs/                                      # 🏗️ Documentation
 │   ├── ARCHITECTURE.md
 │   └── OPERATIONS.md
 │
