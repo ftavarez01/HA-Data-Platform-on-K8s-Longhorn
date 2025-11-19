@@ -346,7 +346,8 @@ kubectl uncordon "$NODE_TO_FAIL"
 ✔️ Expected Output: `node/worker-node-a uncordoned`
 ```
 ---
-### ✅ High Availability Test Summary (Total Success!) 🚀
+### 🧾 **High Availability Test Summary (Total Success!) — Final Results**
+
 
 The High Availability test successfully confirmed that **Longhorn** correctly managed the volume migration during a simulated node failure, ensuring service continuity and data integrity for the PostgreSQL StatefulSet.
 
