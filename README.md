@@ -16,24 +16,26 @@ This well-organized structure clearly separates application code, infrastructure
 
 ```text
 /
-├── app-data-layer/
-│   └── postgres/
-│       ├── postgres-secret.yaml      # Secure credentials for the application
-│       └── postgres-statefulset.yaml # Base PostgreSQL Manifest
-│
-├── docs/                             # 🏗️ Architecture, Operations, and Technical Documentation
-│   ├── ARCHITECTURE.md               # Detailed System Design and Rationale
-│   └── OPERATIONS.md                 # Guide for Day 2 Operations and Troubleshooting
-│
+├── k8s/
+│   ├── base/
+│   │   └── postgres/
+│   │       ├── postgres-secret.yaml       # Base K8s Manifests
+│   │       └── postgres-statefulset.yaml
+│   │
+│   └── longhorn/ 
+│       └── values.yaml                    # Longhorn Helm/Configuration
 │
 ├── kustomize/
 │   └── base/
 │       └── kustomization.yaml             # Kustomize Entry Point (Points to k8s/base)
-|
-├── kustomize/
-│   └── kustomization.yaml            # 🚀 SINGLE ENTRY POINT (Orchestrates all components)
 │
-└── README.md                         # High-level project overview
+├── docs/                                  # 🏗️ Documentation
+│   ├── ARCHITECTURE.md
+│   └── OPERATIONS.md
+│
+└── README.md
+
+
 ```
 
 ### 💾 Kubernetes Persistent Storage with Longhorn (iSCSI Setup)
