@@ -35,9 +35,20 @@ This well-organized structure clearly separates application code, infrastructure
 │
 └── README.md
 
-
 ```
+---
+### 🟦 Why This Matters (Business Impact)
 
+The implemented architecture ensures operational continuity even in the event of node failures, thanks to Longhorn's distributed replication and StatefulSet resilience.  
+This eliminates data loss risks, reduces unplanned downtime, and ensures that critical services remain available.
+
+In a corporate environment, this translates into:
+
+- **Reduced downtime** → higher service availability.
+- **Data integrity ensured** → protection against hardware failures.
+- **Automatic recovery** → less operational intervention.
+- **Production-ready architecture** → ideal for critical databases and enterprise workloads.
+---
 ### 💾 Kubernetes Persistent Storage with Longhorn (iSCSI Setup)
 
 This document details the prerequisite steps for configuring host nodes to support Longhorn, a distributed block storage system for Kubernetes.
