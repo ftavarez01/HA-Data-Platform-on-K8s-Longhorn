@@ -1,7 +1,10 @@
-# **THIS PROJECT IS UNDER CONSTRUCTION YET.**
+###### **THIS PROJECT IS UNDER CONSTRUCTION YET.**
 
-### ⚙️ High-Availability Data Platform on Kubernetes with Longhorn
-<p align="justify"> <img src="https://img.shields.io/badge/Longhorn-High%20Availability-orange?style=for-the-badge&logo=kubernetes" /> <img src="https://img.shields.io/badge/PostgreSQL-Replicated%20Storage-blue?style=for-the-badge&logo=postgresql" /> <img src="https://img.shields.io/badge/Kubernetes-Failover%20Test-success?style=for-the-badge&logo=kubernetes" /> </p>
+# ⚙️ High-Availability Data Platform on Kubernetes with Longhorn
+---
+![High Availability Platform](./images/initial-banner.png)
+
+<p align="center"> <img src="https://img.shields.io/badge/Longhorn-High%20Availability-orange?style=for-the-badge&logo=kubernetes" /> <img src="https://img.shields.io/badge/PostgreSQL-Replicated%20Storage-blue?style=for-the-badge&logo=postgresql" /> <img src="https://img.shields.io/badge/Kubernetes-Failover%20Test-success?style=for-the-badge&logo=kubernetes" /> </p>
 Highly Available (HA) Data Platform on Kubernetes. Implementation of a Software-Defined Storage (Longhorn)  solution to ensure persistence and high availability for stateful applications (e.g., PostgreSQL) within a local K8s cluster.
 
 ---
@@ -20,12 +23,6 @@ This well-organized structure clearly separates application code, infrastructure
 │   ├── ARCHITECTURE.md               # Detailed System Design and Rationale
 │   └── OPERATIONS.md                 # Guide for Day 2 Operations and Troubleshooting
 │
-├── images/                           # Project visuals, diagrams, and logos
-│   ├── iscsi-service.png
-│   ├── kubernetes-icon.png
-│   ├── kubernetes-title.png
-│   ├── longhorn-diagram.png
-│   └── title-profesional-k8s.jpg
 │
 ├── k8s/
 │   └── longhorn-base/ 
@@ -61,10 +58,10 @@ This essential step ensures the host systems can communicate with and mount Long
 
 To confirm the successful installation and status of the iSCSI service:
 
-![Diagrama mostrando volúmenes de Longhorn replicándose a través de nodos de Kubernetes usando iSCSI](images/iscsi-service.png)
-
+<p align="justify">
+<img src="images/iscsi-service.png" width="95%" alt="iagrama mostrando volúmenes de Longhorn replicándose a través de nodos de Kubernetes usando iSCSI">
+</p>
 ---
-
 ### 📝 Storage Architecture and Best Practices (Longhorn)
 
 #### Architectural Overview
