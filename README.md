@@ -170,8 +170,6 @@ kubectl get nodes.longhorn.io -n longhorn-system
 # This command is helpful for checking the pods longhorn is running --> Important:
 kubectl get pods -n longhorn-system
 ```
----
-
 ### B. Verify the StorageClass
 ---
 Longhorn creates a default StorageClass that we'll use for our database.
@@ -241,14 +239,14 @@ You should modify the `StorageClass` or define the replica count directly in you
 ---
 ### 💥 Simulate Node Failure
 
-### 2.3 ✍️ Write a Test Data Point
+#### 2.2 ✍️ Write a Test Data Point
 
-#### Identify the PostgreSQL pod
+### Identify the PostgreSQL pod
 ```bash
 export POSTGRES_POD=$(kubectl get pods -n demo-app -l db=postgres -o jsonpath='{.items[0].metadata.name}')
 ```
 ---
-#### Create data point to prove persistence.
+### Create data point to prove persistence.
 
 ```bash
 # Create table on postgres.
@@ -273,7 +271,7 @@ kubectl exec -it -n demo-app "$POSTGRES_POD" -- \
 echo ">> Test data inserted successfully"
 ```
 ---
-#### We will force the eviction of the PostgreSQL Pod, compelling Kubernetes to move it, which will trigger Longhorn's recovery mechanism.
+### 2.3 We will force the eviction of the PostgreSQL Pod, compelling Kubernetes to move it, which will trigger Longhorn's recovery mechanism.
 
 ```bash
 # 1. Identify the current node hosting the DB (assuming $POSTGRES_POD is exported)
@@ -295,7 +293,7 @@ kubectl drain "$NODE_TO_FAIL" --ignore-daemonsets --delete-emptydir-data --force
 
 Following the node drainage, Kubernetes is expected to have successfully rescheduled the PostgreSQL Pod onto an alternative, healthy Worker node. **Longhorn** must then seamlessly execute the volume migration by detaching the **Persistent Volume (PV)** from the failed node and re-attaching it to the new Pod's host, thus enabling database recovery.
 
-### A. Monitoring Pod Rescheduling
+### 2.6 Monitoring Pod Rescheduling
 
 The first step in validation is to confirm the successful relocation and readiness of the PostgreSQL Pod on the new host.
 
@@ -312,30 +310,52 @@ echo ">> New PostgreSQL Pod Identity: **$NEW_POSTGRES_POD**"
 echo ">> New Host Node: **$NEW_NODE**"
 ```
 ---
-### B. Identify the new PostgreSQL pod and node 
+### 2.7 Identify the new PostgreSQL pod and node 
 ```bash
 export NEW_POSTGRES_POD=$(kubectl get pods -n demo-app -l db=postgres -o jsonpath='{.items[0].metadata.name}')
 export NEW_NODE=$(kubectl get pod -n demo-app "$NEW_POSTGRES_POD" -o jsonpath='{.spec.nodeName}')
 echo ">> New PostgreSQL Pod: **$NEW_POSTGRES_POD**"
 echo ">> New Node: **$NEW_NODE**"
 ```
-### C. Read the Test DataExecute a query inside the newly recovered pod to confirm that the data written before the node failure is still present.Bashecho "Verifying data persistence..."
-Execute a SELECT query on the recovered pod
-```bash
-kubectl exec -it -n demo-app "$NEW_POSTGRES_POD" -- psql -U postgres-user -d postgres-db -c "SELECT * FROM longhorn_Table_testing"
-```
----
-### D. Expected output should show the record: 
-```bash
-(1, 'DATA_STORAGE_LONGHORN')
-```
----
+## 2.8. Data Integrity Verification 💾
+* **The final step is to execute a database query against the recovered Pod to confirm that the transactional data written prior to the node failure remains persistent and accessible, thus validating the entire High Availability mechanism.**
 
+```bash
+# Execute a SELECT query on the recovered Pod instance to retrieve the test record.
+echo "Initiating verification query..."
+
+kubectl exec -it -n demo-app "$POSTGRES_POD" -- \
+  psql -U postgres-user -d postgres-db -c "
+    SELECT * FROM longhorn_Table_testing;
+  "
+echo ">> Rows selected successfully"
+
+✔️ Expected Output:
+
+ id |         info          
+----+-----------------------
+  1 | DATA_STORAGE_LONGHORN
+(1 rows)
+
+```
+---
+### 🔄 2.9 Reverting the Node Drain (Returning the Cluster to Normal State)
+* **After successfully completing the failover simulation and verifying the system's high availability, you must re-enable the drained node so it can accept Pods again. Kubernetes marks the node as cordoned (unschedulable), so this state needs to be reverted.**
+---
+👉 `Uncordon`: This command returns the node to a Schedulable state, allowing Kubernetes to resume scheduling Pods on node.
+
+```bash
+echo ">> Re-enabling the node after HA test..."
+kubectl uncordon "$NODE_TO_FAIL"
+
+✔️ Expected Output: `node/worker-node-a uncordoned`
+```
+---
 ### ✅ High Availability Test Summary (Total Success!) 🚀
 
 The High Availability test successfully confirmed that **Longhorn** correctly managed the volume migration during a simulated node failure, ensuring service continuity and data integrity for the PostgreSQL StatefulSet.
 
-| Step | English Translation |
+| Step | Result |
 | :--- | :--- |
 | **Data Written** | `DATA_STORAGE_LONGHORN` written. |
 | **Simulated Failure** | Node **`worker-node-a`** drained. |
