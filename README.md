@@ -1,5 +1,5 @@
 ###### **THIS PROJECT IS UNDER CONSTRUCTION YET.**
-# ⚙️ High-Availability Data Platform on K8S with Longhorn
+## ⚙️ High-Availability Data Platform on K8S with Longhorn
 ---
 <p align="center">
   <img src="./images/initial-banner.png" alt="HA Data Platform Banner" width="94%" />
