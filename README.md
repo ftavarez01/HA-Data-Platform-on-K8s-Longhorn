@@ -64,7 +64,7 @@ This essential step ensures the host systems can communicate with and mount Long
 To confirm the successful installation and status of the iSCSI service:
 
 <p align="justify">
-<img src="images/iscsi-service.png" width="94%" alt="iagrama mostrando volúmenes de Longhorn replicándose a través de nodos de Kubernetes usando iSCSI">
+<img src="images/iscsi-service.png" width="94%" heigth="1024p" alt="iagrama mostrando volúmenes de Longhorn replicándose a través de nodos de Kubernetes usando iSCSI">
 </p>
 
 ### 📝 Storage Architecture and Best Practices (Longhorn)
