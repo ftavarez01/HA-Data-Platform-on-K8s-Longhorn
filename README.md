@@ -1,10 +1,11 @@
 # **THIS PROJECT IS UNDER CONSTRUCTION YET.**
 
-## ⚙️ High-Availability Data Platform on Kubernetes with Longhorn
+### ⚙️ High-Availability Data Platform on Kubernetes with Longhorn
+<p align="justify"> <img src="https://img.shields.io/badge/Longhorn-High%20Availability-orange?style=for-the-badge&logo=kubernetes" /> <img src="https://img.shields.io/badge/PostgreSQL-Replicated%20Storage-blue?style=for-the-badge&logo=postgresql" /> <img src="https://img.shields.io/badge/Kubernetes-Failover%20Test-success?style=for-the-badge&logo=kubernetes" /> </p>
 Highly Available (HA) Data Platform on Kubernetes. Implementation of a Software-Defined Storage (Longhorn)  solution to ensure persistence and high availability for stateful applications (e.g., PostgreSQL) within a local K8s cluster.
 
 ---
-## 📂 Directory Structure (GitOps Ready)
+### 📂 Directory Structure (GitOps Ready)
 ***
 This well-organized structure clearly separates application code, infrastructure configuration, and orchestration layers, adhering to **modern GitOps principles**.
 
@@ -36,17 +37,17 @@ This well-organized structure clearly separates application code, infrastructure
 └── README.md                         # High-level project overview
 ```
 
-## 💾 Kubernetes Persistent Storage with Longhorn (iSCSI Setup)
+### 💾 Kubernetes Persistent Storage with Longhorn (iSCSI Setup)
 
 This document details the prerequisite steps for configuring host nodes to support Longhorn, a distributed block storage system for Kubernetes.
 
 ---
 
-## 🛠️ Prerequisite: Open-iSCSI Client Installation
+### 🛠️ Prerequisite: Open-iSCSI Client Installation
 
 This essential step ensures the host systems can communicate with and mount Longhorn volumes, enabling network-based volume replication and high availability.
 
-## 🛠️ Prerequisite: Open-iSCSI Client Installation
+### 🛠️ Prerequisite: Open-iSCSI Client Installation
 
 This essential step ensures the host systems can communicate with and mount Longhorn volumes, enabling network-based volume replication and high availability.
 
@@ -64,9 +65,9 @@ To confirm the successful installation and status of the iSCSI service:
 
 ---
 
-## 📝 Storage Architecture and Best Practices (Longhorn)
+### 📝 Storage Architecture and Best Practices (Longhorn)
 
-### Architectural Overview
+#### Architectural Overview
 
 The diagram below illustrates the high-level integration of Longhorn, demonstrating how it leverages the iSCSI client on each worker node for persistent volume access and cross-node data replication.
 
@@ -74,11 +75,11 @@ The diagram below illustrates the high-level integration of Longhorn, demonstrat
   <img src="images/longhorn-diagram.png" width="95%" alt="Diagrama de Arquitectura de Longhorn con replicación iSCSI">
 </p>
 
-### Current Implementation and Resource Allocation
+#### Current Implementation and Resource Allocation
 
 The current deployment utilizes the host's existing disks, requiring a minimum of **62 GB of available free space** per worker node to accommodate Longhorn volume replicas. For demonstration purposes, the root partition (`/var/lib/longhorn`) is currently designated for storage.
 
-### ⚠️ Production Best Practice Note
+#### ⚠️ Production Best Practice Note
 
 While the current setup is adequate for proof-of-concept and demonstration environments, the **industry-standard best practice** for a **Production** environment is to provision a **dedicated physical disk or partition** for Longhorn storage on each node.
 
@@ -90,13 +91,13 @@ While the current setup is adequate for proof-of-concept and demonstration envir
 This architectural consideration is crucial for maintaining the stability and high performance of a robust production data platform.
 
 
-## 💾 3. Longhorn Installation with Helm
+### 💾 3. Longhorn Installation with Helm
 
 The following commands detail the best-practice method for installing the stable version of Longhorn using Helm.
 
 ---
 
-## A. Helm Repository Preparation
+### A. Helm Repository Preparation
 
 These commands prepare your local environment to locate the official Longhorn charts.
 
@@ -108,7 +109,7 @@ To ensure the repositories are ready:
 
 ---
 
-## B. Install the Longhorn Controller
+### B. Install the Longhorn Controller
 
 We will install Longhorn in its own dedicated namespace (`longhorn-system`) using Helm.
 
@@ -117,10 +118,9 @@ We will install Longhorn in its own dedicated namespace (`longhorn-system`) usin
 helm install longhorn longhorn/longhorn --namespace longhorn-system --create-namespace
 
 ```
-
 ---
 
-## ✅ Phase 1: Longhorn Functional Verification
+### ✅ Phase 1: Longhorn Functional Verification
 ---
 We must ensure that the Longhorn controller is ready to provision storage and that your nodes are registered.
 
@@ -166,6 +166,118 @@ kubectl get sc
 # This command forwards the Longhorn service port to your local machine:
 kubectl port-forward svc/longhorn-frontend 8080:80 -n longhorn-system
 ```
-⚠️ **IMPORTANT:** Once the command is running, **open your web browser** and navigate to the following address:
-> 
-> [**http://localhost:8080**](http://localhost:8080)
+⚠️ **IMPORTANT:** Once the command is running, **open your web browser** and navigate to the following address: 
+ 
+ [**http://localhost:8080**](http://localhost:8080)
+ 
+ ---
+
+ ### 💾 2. Node Failure Simulation and Persistence (HA Test)
+
+This section verifies the **High Availability (HA)** of your PostgreSQL service. It ensures that **Longhorn** correctly detaches and re-attaches the persistent volume to the replacement Pod without any data loss during a node failure simulation.
+
+---
+
+### 2.1. ⚙️ Longhorn Replica Pre-Configuration (Critical)
+
+To ensure Longhorn volumes do not enter a **Degraded** state in small or limited clusters (e.g., a cluster with only two worker nodes), it is essential to adjust the default replica count.
+
+By default, Longhorn uses **3 replicas** (`numberOfReplicas: 3`). If you only have two Worker nodes, the volume will constantly be marked as degraded because the third replica cannot be placed, compromising your redundancy.
+
+### Action: Update the Replica Count
+
+You should modify the `StorageClass` or define the replica count directly in your `VolumeClaimTemplates`.
+
+* **If you are using a custom StorageClass (Recommended):**
+    Ensure the `numberOfReplicas` parameter in your `longhorn` StorageClass is set equal to the number of available Worker nodes (e.g., `2`).
+
+* **If you are managing it within the StatefulSet (as in your configuration):**
+
+    ```yaml
+    volumeClaimTemplates:
+      - metadata:
+          name: postgres-data
+        spec:
+          accessModes: [ "ReadWriteOnce" ]
+          storageClassName: "longhorn"
+          # If necessary, ensure parameters are set to match your node count
+          # Note: If the volume already exists with 3 replicas, you must manually 
+          # update it in the Longhorn UI or via kubectl patch.
+          resources:
+            requests:
+              storage: 5Gi
+    ```
+
+---
+
+### 2.2. 💥 Simulate Node Failure
+
+We will force the eviction of the PostgreSQL Pod, compelling Kubernetes to move it, which will trigger Longhorn's recovery mechanism.
+
+```bash
+# 1. Identify the current node hosting the DB (assuming $POSTGRES_POD is exported)
+export NODE_TO_FAIL=$(kubectl get pod -n demo-app "$POSTGRES_POD" -o jsonpath='{.spec.nodeName}')
+echo ">> Current Node: $NODE_TO_FAIL"
+```
+---
+
+### 2. Drain the node: This marks the node as unschedulable and evicts the pods.
+💡 kubectl drain Command Options
+| Option | Purpose | | :--- | :--- | | --ignore-daemonsets | Prevents eviction of Pods managed by DaemonSets. This is crucial for leaving essential components like Longhorn (CSIs, Managers) and networking Pods (CNI, e.g., Calico, Cilium, etc.) active on the node being drained. | | --delete-emptydir-data | Allows the deletion of Pods that utilize emptyDir volumes, acknowledging that this data will be lost. | | --force | Forces the termination of Pods that are not managed by a higher-level controller. This is necessary to successfully evict Pods belonging to StatefulSets (like your PostgreSQL Pod). |
+```bash
+echo ">> Draining the node to simulate the failure..."
+kubectl drain "$NODE_TO_FAIL" --ignore-daemonsets --delete-emptydir-data --force
+```
+---
+
+### 2.3. 🧪 Validation of Recovery and Data Persistence
+
+Following the node drainage, Kubernetes is expected to have successfully rescheduled the PostgreSQL Pod onto an alternative, healthy Worker node. **Longhorn** must then seamlessly execute the volume migration by detaching the **Persistent Volume (PV)** from the failed node and re-attaching it to the new Pod's host, thus enabling database recovery.
+
+#### A. Monitoring Pod Rescheduling
+
+The first step in validation is to confirm the successful relocation and readiness of the PostgreSQL Pod on the new host.
+
+```bash
+# 1. Initiate a wait condition until the replacement PostgreSQL Pod reports a 'Ready' status.
+echo "Awaiting the successful rescheduling and readiness of the new PostgreSQL Pod..."
+kubectl wait --for=condition=Ready pod -n demo-app -l db=postgres --timeout=300s
+
+# 2. Extract the name of the newly running Pod and its corresponding Node.
+export NEW_POSTGRES_POD=$(kubectl get pods -n demo-app -l db=postgres -o jsonpath='{.items[0].metadata.name}')
+export NEW_NODE=$(kubectl get pod -n demo-app "$NEW_POSTGRES_POD" -o jsonpath='{.spec.nodeName}')
+
+echo ">> New PostgreSQL Pod Identity: **$NEW_POSTGRES_POD**"
+echo ">> New Host Node: **$NEW_NODE**"
+```
+---
+### 📍 2. Identify the new PostgreSQL pod and node 
+```bash
+export NEW_POSTGRES_POD=$(kubectl get pods -n demo-app -l db=postgres -o jsonpath='{.items[0].metadata.name}')
+export NEW_NODE=$(kubectl get pod -n demo-app "$NEW_POSTGRES_POD" -o jsonpath='{.spec.nodeName}')
+echo ">> New PostgreSQL Pod: **$NEW_POSTGRES_POD**"
+echo ">> New Node: **$NEW_NODE**"
+```
+#### B. Read the Test DataExecute a query inside the newly recovered pod to confirm that the data written before the node failure is still present.Bashecho "Verifying data persistence..."
+Execute a SELECT query on the recovered pod
+```bash
+kubectl exec -it -n demo-app "$NEW_POSTGRES_POD" -- psql -U postgres-user -d postgres-db -c "SELECT * FROM longhorn_Table_testing"
+```
+---
+#### Expected output should show the record: 
+```bash
+(1, 'DATA_STORAGE_LONGHORN')
+```
+---
+
+### ✅ High Availability Test Summary (Total Success!) 🚀
+
+The High Availability test successfully confirmed that **Longhorn** correctly managed the volume migration during a simulated node failure, ensuring service continuity and data integrity for the PostgreSQL StatefulSet.
+
+| Step | English Translation |
+| :--- | :--- |
+| **Data Written** | `DATA_STORAGE_LONGHORN` written. |
+| **Simulated Failure** | Node **`worker-node-a`** drained. |
+| **HA Activated** | Pod `postgres-0` migrated to **`worker-node-b`**. |
+| **Persistence Verified** | Data successfully recovered. |
+
