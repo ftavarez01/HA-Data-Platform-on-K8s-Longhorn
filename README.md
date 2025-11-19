@@ -1,4 +1,3 @@
-###### **THIS PROJECT IS UNDER CONSTRUCTION YET.**
 <h2 align="center" style="font-weight: 900;">
   ⚙️ High-Availability Data Platform on Kubernetes with Longhorn
 </h2>
