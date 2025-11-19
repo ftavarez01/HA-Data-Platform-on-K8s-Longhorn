@@ -148,7 +148,6 @@ helm install longhorn longhorn/longhorn --namespace longhorn-system --create-nam
 ---
 
 ### ✅ Phase 1: Longhorn Functional Verification
----
 We must ensure that the Longhorn controller is ready to provision storage and that your nodes are registered.
 
 ### A. Verify Node Installation
@@ -209,7 +208,6 @@ kubectl port-forward svc/longhorn-frontend 8080:80 -n longhorn-system
 This section verifies the **High Availability (HA)** of your PostgreSQL service. It ensures that **Longhorn** correctly detaches and re-attaches the persistent volume to the replacement Pod without any data loss during a node failure simulation.
 
 ---
-
 ### 2.1. ⚙️ Longhorn Replica Pre-Configuration (Critical)
 
 To ensure Longhorn volumes do not enter a **Degraded** state in small or limited clusters (e.g., a cluster with only two worker nodes), it is essential to adjust the default replica count.
@@ -241,10 +239,41 @@ You should modify the `StorageClass` or define the replica count directly in you
     ```
 
 ---
+### 💥 Simulate Node Failure
 
-### 2.2. 💥 Simulate Node Failure
+### 2.3 ✍️ Write a Test Data Point
 
-We will force the eviction of the PostgreSQL Pod, compelling Kubernetes to move it, which will trigger Longhorn's recovery mechanism.
+#### Identify the PostgreSQL pod
+```bash
+export POSTGRES_POD=$(kubectl get pods -n demo-app -l db=postgres -o jsonpath='{.items[0].metadata.name}')
+```
+---
+#### Create data point to prove persistence.
+
+```bash
+# Create table on postgres.
+kubectl exec -it -n demo-app "$POSTGRES_POD" -- \
+  psql -U postgres-user -d postgres-db -c "
+  CREATE TABLE IF NOT EXISTS longhorn_Table_testing (
+    id INT PRIMARY KEY,
+    info TEXT
+  );
+  "
+echo ">> Table Created successfully"
+
+# Insert data on table.
+kubectl exec -it -n demo-app "$POSTGRES_POD" -- \
+  psql -U postgres-user -d postgres-db -c "
+  INSERT INTO longhorn_Table_testing (id, info)
+  VALUES (1, 'DATA_STORAGE_LONGHORN')
+  ON CONFLICT (id) DO NOTHING;
+  COMMIT;
+  "
+
+echo ">> Test data inserted successfully"
+```
+---
+#### We will force the eviction of the PostgreSQL Pod, compelling Kubernetes to move it, which will trigger Longhorn's recovery mechanism.
 
 ```bash
 # 1. Identify the current node hosting the DB (assuming $POSTGRES_POD is exported)
@@ -253,7 +282,7 @@ echo ">> Current Node: $NODE_TO_FAIL"
 ```
 ---
 
-### 2.3 Drain the node: This marks the node as unschedulable and evicts the pods.
+### 2.4 Drain the node: This marks the node as unschedulable and evicts the pods.
 💡 kubectl drain Command Options
 | Option | Purpose | | :--- | :--- | | --ignore-daemonsets | Prevents eviction of Pods managed by DaemonSets. This is crucial for leaving essential components like Longhorn (CSIs, Managers) and networking Pods (CNI, e.g., Calico, Cilium, etc.) active on the node being drained. | | --delete-emptydir-data | Allows the deletion of Pods that utilize emptyDir volumes, acknowledging that this data will be lost. | | --force | Forces the termination of Pods that are not managed by a higher-level controller. This is necessary to successfully evict Pods belonging to StatefulSets (like your PostgreSQL Pod). |
 ```bash
@@ -262,7 +291,7 @@ kubectl drain "$NODE_TO_FAIL" --ignore-daemonsets --delete-emptydir-data --force
 ```
 ---
 
-### 2.4. 🧪 Validation of Recovery and Data Persistence
+### 2.5 🧪 Validation of Recovery and Data Persistence
 
 Following the node drainage, Kubernetes is expected to have successfully rescheduled the PostgreSQL Pod onto an alternative, healthy Worker node. **Longhorn** must then seamlessly execute the volume migration by detaching the **Persistent Volume (PV)** from the failed node and re-attaching it to the new Pod's host, thus enabling database recovery.
 
