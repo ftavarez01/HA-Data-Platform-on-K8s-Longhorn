@@ -26,10 +26,10 @@ This well-organized structure clearly separates application code, infrastructure
 │   └── OPERATIONS.md                 # Guide for Day 2 Operations and Troubleshooting
 │
 │
-├── k8s/
-│   └── longhorn-base/ 
-│       └── values.yaml               # Longhorn Helm Configuration file
-│
+├── kustomize/
+│   └── base/
+│       └── kustomization.yaml             # Kustomize Entry Point (Points to k8s/base)
+|
 ├── kustomize/
 │   └── kustomization.yaml            # 🚀 SINGLE ENTRY POINT (Orchestrates all components)
 │
