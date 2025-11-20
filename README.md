@@ -1,5 +1,5 @@
 <h2 align="center" style="font-weight: 900;">
-  ⚙️ High-Availability Data Platform on Kubernetes with Longhorn
+  ⚙️ High Availability Data Platform on Kubernetes with Longhorn
 </h2>
 <p align="center">
   <img src="./images/initial-banner.png" alt="HA Data Platform Banner" width="94%" />
